@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/router";
+import withAuth from "@/components/HOC/withAuth";
+import Link from "next/link";
+import useUser from "@/contexts/userContext";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -31,6 +34,7 @@ export default function Login() {
     resolver: zodResolver(LoginSchema),
   });
   const router = useRouter();
+  const { loginUser } = useUser();
   return (
     <div className="w-screen h-screen bg-white">
       <div className="w-full h-full flex justify-center items-center">
@@ -46,6 +50,7 @@ export default function Login() {
                   message: errors.message,
                 });
               } else {
+                loginUser();
                 router.push("/hello-world");
               }
             })}
@@ -78,6 +83,12 @@ export default function Login() {
               <button className="bg-blue-400 p-1 rounded text-white">
                 Login
               </button>
+              <p className="text-center">
+                Don't have an account?{" "}
+                <span className="text-blue-400">
+                  <Link href="/signup">Sign Up</Link>
+                </span>
+              </p>
             </div>
           </form>
         </div>
