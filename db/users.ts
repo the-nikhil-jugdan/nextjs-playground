@@ -1,6 +1,6 @@
 import getDBConnection from "./connect";
 
-type User = {
+export type User = {
   email: String;
   password?: String;
 };

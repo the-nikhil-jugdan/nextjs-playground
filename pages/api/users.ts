@@ -13,7 +13,7 @@ export default async function handler(
     const userExists = !(await verifyUserUnique(userData));
     if (userExists) {
       res.status(400).json({
-        message: "User with that email already exists",
+        email: "User with that email already exists",
       });
     } else {
       await createUser(userData);
