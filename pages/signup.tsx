@@ -8,10 +8,11 @@ import { useRouter } from "next/router";
 const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, "Please enter password"),
+  confirmPassword: z.string().min(1, "Please enter password"),
 });
 
-async function performLogin(userData) {
-  return await fetch("/api/login", {
+async function performSignup(userData) {
+  return await fetch("/api/users", {
     headers: {
       "Content-Type": "application/json",
     },
@@ -38,20 +39,27 @@ export default function Login() {
           <form
             onSubmit={handleSubmit(async (data) => {
               clearErrors();
-              const res = await performLogin(data);
-              if (!res.ok) {
-                const errors = await res.json();
+              if (data.password !== data.confirmPassword) {
                 setError("customError", {
                   type: "custom",
-                  message: errors.message,
+                  message: "Passwords do not match!",
+                });
+                return;
+              }
+              const res = await performSignup(data);
+              if (!res.ok) {
+                const errors = await res.json();
+                setError("email", {
+                  type: "custom",
+                  message: errors.email,
                 });
               } else {
-                router.push("/hello-world");
+                router.push("/login");
               }
             })}
           >
             <div className="flex flex-col gap-y-4">
-              <h2 className="font-bold text-2xl text-center">Login!</h2>
+              <h2 className="font-bold text-2xl text-center">Sign Up!</h2>
               <label htmlFor="email">Email</label>
               <input
                 className="border-gray-300 rounded border p-1"
@@ -72,11 +80,21 @@ export default function Login() {
               <span className="text-red-500">
                 <ErrorMessage name="password" errors={errors} />
               </span>
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                className="border-gray-300 rounded border p-1"
+                type="password"
+                {...register("confirmPassword")}
+                id="password"
+              />
+              <span className="text-red-500">
+                <ErrorMessage name="confirmPassword" errors={errors} />
+              </span>
               <span className="text-red-500">
                 <ErrorMessage name="customError" errors={errors} />
               </span>
               <button className="bg-blue-400 p-1 rounded text-white">
-                Login
+                Sign Up
               </button>
             </div>
           </form>
